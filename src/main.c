@@ -83,9 +83,9 @@ void create_window(t_data *drawer)
 
 double evaluate_expression(const char *expression, double x)
 {
-	double	result;
-	char	**tokens;
-	int		i;
+	double result;
+	char **tokens;
+	int i;
 
 	i = 0;
 	result = 0.0;
@@ -94,10 +94,10 @@ double evaluate_expression(const char *expression, double x)
 	{
 		if (ft_strchr(tokens[i], 'x'))
 		{
-			double	coefficient = 1.0;
-			int		power = 1;
-			char	*x_pos = ft_strchr(tokens[i], 'x');
-			char	*power_pos = ft_strchr(tokens[i], '^');
+			double coefficient = 1.0;
+			int power = 1;
+			char *x_pos = ft_strchr(tokens[i], 'x');
+			char *power_pos = ft_strchr(tokens[i], '^');
 
 			if ((tokens[i][0] == '-' || tokens[i][0] == '+') && tokens[i][1] == 'x')
 			{
@@ -134,19 +134,37 @@ void draw_function(char *function, t_data *drawer)
 		result = evaluate_expression(function, x);
 		y = (int)(WINDOW_HEIGHT / 2 - result);
 
-		if (x != -WINDOW_WIDTH / 2 && prev_y >= 0 && prev_y < WINDOW_HEIGHT && y >= 0 && y < WINDOW_HEIGHT)
+		if (x != -WINDOW_WIDTH / 2)
 		{
 			int dx = x + WINDOW_WIDTH / 2;
 			int prev_dx = (x - 1) + WINDOW_WIDTH / 2;
 
-			int step_y = (y > prev_y) ? 1 : -1;
-			for (int curr_y = prev_y; curr_y != y + step_y; curr_y += step_y)
+			int clipped_prev_y = prev_y;
+			int clipped_y = y;
+
+			if (prev_y < 0)
+				clipped_prev_y = 0;
+			else if (prev_y >= WINDOW_HEIGHT)
+				clipped_prev_y = WINDOW_HEIGHT - 1;
+
+			if (y < 0)
+				clipped_y = 0;
+			else if (y >= WINDOW_HEIGHT)
+				clipped_y = WINDOW_HEIGHT - 1;
+
+			if ((prev_y >= 0 && prev_y < WINDOW_HEIGHT) || (y >= 0 && y < WINDOW_HEIGHT))
 			{
-				int pixel_index = (curr_y * drawer->img.line_length) + (prev_dx * (drawer->img.bpp / 8));
-				*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFF0000;
+				int step_y = (clipped_y > clipped_prev_y) ? 1 : -1;
+				for (int curr_y = clipped_prev_y; curr_y != clipped_y + step_y; curr_y += step_y)
+				{
+					if (curr_y >= 0 && curr_y < WINDOW_HEIGHT)
+					{
+						int pixel_index = (curr_y * drawer->img.line_length) + (prev_dx * (drawer->img.bpp / 8));
+						*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFF0000;
+					}
+				}
 			}
 		}
-
 		prev_y = y;
 	}
 	mlx_put_image_to_window(drawer->mlx, drawer->win, drawer->img.img, 0, 0);
