@@ -83,38 +83,44 @@ void create_window(t_data *drawer)
 
 double evaluate_expression(const char *expression, double x)
 {
-	double result = 0.0;
-	char *expr = strdup(expression); // Duplicate the string to tokenize
-	char *token = strtok(expr, " ");
+	double	result;
+	char	**tokens;
+	int		i;
 
-	while (token != NULL) {
-		if (strchr(token, 'x')) {
-			double coefficient = 1.0;
-			int power = 1;
+	i = 0;
+	result = 0.0;
+	tokens = ft_split(expression, ' ');
+	while (tokens[i])
+	{
+		if (ft_strchr(tokens[i], 'x'))
+		{
+			double	coefficient = 1.0;
+			int		power = 1;
+			char	*x_pos = ft_strchr(tokens[i], 'x');
+			char	*power_pos = ft_strchr(tokens[i], '^');
 
-			// Parse coefficient
-			char *x_pos = strchr(token, 'x');
-			if (x_pos != token) {
-				coefficient = atof(token);
-				printf("coefficient: %f\n", coefficient);
+			if ((tokens[i][0] == '-' || tokens[i][0] == '+') && tokens[i][1] == 'x')
+			{
+				if (tokens[i][0] == '-')
+					coefficient = -1.0;
 			}
+			else if (x_pos != tokens[i])
+				coefficient = atof(tokens[i]);
 
-			// Parse power
-			char *power_pos = strchr(token, '^');
-			if (power_pos) {
+			if (power_pos)
 				power = atoi(power_pos + 1);
-			}
 
 			result += coefficient * pow(x, power);
-		} else {
-			result += atof(token);
 		}
-
-		token = strtok(NULL, " ");
+		else
+			result += atof(tokens[i]);
+		i++;
 	}
 
-	free(expr);
-	return result;
+	for (int j = 0; tokens[j]; j++)
+		free(tokens[j]);
+	free(tokens);
+	return (result);
 }
 
 void draw_function(char *function, t_data *drawer)
