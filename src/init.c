@@ -4,6 +4,9 @@ void	init_struct(t_data *drawer)
 {
 	drawer->mlx = NULL;
 	drawer->win = NULL;
+	drawer->x_offset = 0;
+	drawer->y_offset = 0;
+	drawer->function = NULL;
 	drawer->img.img = NULL;
 	drawer->img.addr = NULL;
 	drawer->img.bpp = 0;

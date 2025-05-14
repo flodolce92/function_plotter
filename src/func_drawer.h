@@ -43,6 +43,9 @@ typedef struct s_data
 {
 	void		*mlx;
 	void		*win;
+	int			x_offset;
+	int			y_offset;
+	char		*function;
 	t_image		img;
 	t_key_press	keys;
 }	t_data;
@@ -51,5 +54,7 @@ void	init_struct(t_data *drawer);
 int		on_destroy(t_data *drawer);
 int		handle_key_press(int keycode, t_data *drawer);
 int		handle_key_released(int keycode, t_data *drawer);
+int		loop_hook(t_data *drawer);
+void	draw_function(char *function, t_data *drawer);
 
 #endif

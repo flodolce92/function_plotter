@@ -11,21 +11,18 @@ void error_message(char *message, t_data *drawer)
 
 void create_plane(t_data *drawer)
 {
-	int x;
-	int y;
+	int x, y;
 
-	drawer->img.addr = mlx_get_data_addr(drawer->img.img, &drawer->img.bpp,
-										 &drawer->img.line_length, &drawer->img.endian);
 	ft_memset(drawer->img.addr, 0, WINDOW_HEIGHT * drawer->img.line_length);
 
 	for (y = 0; y < WINDOW_HEIGHT; y++)
 	{
 		for (x = 0; x < WINDOW_WIDTH; x++)
 		{
-			if (x % 50 == 0 || y % 50 == 0)
+			if (((x + drawer->x_offset) % 50 == 0) || ((y + drawer->y_offset) % 50 == 0))
 			{
 				int pixel_index = (y * drawer->img.line_length) + (x * (drawer->img.bpp / 8));
-				*(unsigned int *)(drawer->img.addr + pixel_index) = 0x2F2F2F;
+				*(unsigned int *)(drawer->img.addr + pixel_index) = 0x2F2F2F; // Grid color
 			}
 		}
 	}
@@ -34,29 +31,18 @@ void create_plane(t_data *drawer)
 	{
 		for (x = 0; x < WINDOW_WIDTH; x++)
 		{
-			if (x == WINDOW_WIDTH / 2 || y == WINDOW_HEIGHT / 2)
+			if ((x + drawer->x_offset) == WINDOW_WIDTH / 2)
 			{
 				int pixel_index = (y * drawer->img.line_length) + (x * (drawer->img.bpp / 8));
-				*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFFFFFF;
+				*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFFFFFF; // Axis color
+			}
+			if ((y + drawer->y_offset) == WINDOW_HEIGHT / 2)
+			{
+				int pixel_index = (y * drawer->img.line_length) + (x * (drawer->img.bpp / 8));
+				*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFFFFFF; // Axis color
 			}
 		}
 	}
-
-	for (y = 0; y < 10; y++)
-	{
-		int x_center = WINDOW_WIDTH / 2;
-		*(unsigned int *)(drawer->img.addr + ((y * drawer->img.line_length) + ((x_center - y) * (drawer->img.bpp / 8)))) = 0xFFFFFF;
-		*(unsigned int *)(drawer->img.addr + ((y * drawer->img.line_length) + ((x_center + y) * (drawer->img.bpp / 8)))) = 0xFFFFFF;
-	}
-
-	for (x = WINDOW_WIDTH - 10; x < WINDOW_WIDTH; x++)
-	{
-		int y_center = WINDOW_HEIGHT / 2;
-		*(unsigned int *)(drawer->img.addr + (((y_center - (WINDOW_WIDTH - x)) * drawer->img.line_length) + (x * (drawer->img.bpp / 8)))) = 0xFFFFFF;
-		*(unsigned int *)(drawer->img.addr + (((y_center + (WINDOW_WIDTH - x)) * drawer->img.line_length) + (x * (drawer->img.bpp / 8)))) = 0xFFFFFF;
-	}
-
-	mlx_put_image_to_window(drawer->mlx, drawer->win, drawer->img.img, 0, 0);
 }
 
 void create_window(t_data *drawer)
@@ -78,7 +64,12 @@ void create_window(t_data *drawer)
 	if (!drawer->img.img)
 		error_message("mlx_new_image failed.", drawer);
 
-	create_plane(drawer);
+	drawer->img.addr = mlx_get_data_addr(drawer->img.img,
+										 &drawer->img.bpp,
+										 &drawer->img.line_length,
+										 &drawer->img.endian);
+	if (!drawer->img.addr)
+		error_message("mlx_get_data_addr failed.", drawer);
 }
 
 double evaluate_expression(const char *expression, double x)
@@ -129,10 +120,11 @@ void draw_function(char *function, t_data *drawer)
 	double result;
 	int prev_y = 0;
 
+	create_plane(drawer);
 	for (x = -WINDOW_WIDTH / 2; x < WINDOW_WIDTH / 2; x++)
 	{
-		result = evaluate_expression(function, x);
-		y = (int)(WINDOW_HEIGHT / 2 - result);
+		result = evaluate_expression(function, x + drawer->x_offset);
+		y = (int)(WINDOW_HEIGHT / 2 - result) - drawer->y_offset;
 
 		if (x != -WINDOW_WIDTH / 2)
 		{
@@ -167,7 +159,6 @@ void draw_function(char *function, t_data *drawer)
 		}
 		prev_y = y;
 	}
-	mlx_put_image_to_window(drawer->mlx, drawer->win, drawer->img.img, 0, 0);
 }
 
 int main(int ac, char **av)
@@ -180,9 +171,9 @@ int main(int ac, char **av)
 					  NULL);
 
 	init_struct(&drawer);
+	drawer.function = av[1];
 	create_window(&drawer);
-	draw_function(av[1], &drawer);
-	// mlx_loop_hook(drawer.mlx, loop_hook, &drawer);
+	mlx_loop_hook(drawer.mlx, loop_hook, &drawer);
 	mlx_hook(drawer.win, 2, 1L << 0, handle_key_press, &drawer);
 	mlx_hook(drawer.win, 3, 1L << 1, handle_key_released, &drawer);
 	mlx_hook(drawer.win, 17, 1L << 17, on_destroy, &drawer);

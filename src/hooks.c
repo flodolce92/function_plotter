@@ -1,34 +1,21 @@
 #include "func_drawer.h"
 
-int	handle_key_press(int keycode, t_data *drawer)
+int handle_key_press(int keycode, t_data *drawer)
 {
-	// if (keycode == W)
-	// {
-	// 	drawer->p_pos.direction = BACK;
-	// 	drawer->keys.w = true;
-	// }
-	// else if (keycode == A)
-	// {
-	// 	drawer->p_pos.direction = LEFT;
-	// 	drawer->keys.a = true;
-	// }
-	// else if (keycode == S)
-	// {
-	// 	drawer->p_pos.direction = FRONT;
-	// 	drawer->keys.s = true;
-	// }
-	// else if (keycode == D)
-	// {
-	// 	drawer->p_pos.direction = RIGHT;
-	// 	drawer->keys.d = true;
-	// }
-	// else
-	if (keycode == ESC)
+	if (keycode == W)
+		drawer->keys.w = true;
+	else if (keycode == A)
+		drawer->keys.a = true;
+	else if (keycode == S)
+		drawer->keys.s = true;
+	else if (keycode == D)
+		drawer->keys.d = true;
+	else if (keycode == ESC)
 		on_destroy(drawer);
 	return (0);
 }
 
-int	handle_key_released(int keycode, t_data *drawer)
+int handle_key_released(int keycode, t_data *drawer)
 {
 	if (keycode == W)
 		drawer->keys.w = false;
@@ -41,11 +28,17 @@ int	handle_key_released(int keycode, t_data *drawer)
 	return (0);
 }
 
-// int	loop_hook(t_data *drawer)
-// {
-// 	drawer->frames++;
-// 	update_player_position(drawer);
-// 	fill_window(drawer);
-// 	usleep(80000);
-// 	return (0);
-// }
+int	loop_hook(t_data *drawer)
+{
+	if (drawer->keys.w)
+		drawer->y_offset -= 10;
+	if (drawer->keys.s)
+		drawer->y_offset += 10;
+	if (drawer->keys.a)
+		drawer->x_offset -= 10;
+	if (drawer->keys.d)
+		drawer->x_offset += 10;
+	draw_function(drawer->function, drawer);
+	mlx_put_image_to_window(drawer->mlx, drawer->win, drawer->img.img, 0, 0);
+	return (0);
+}
