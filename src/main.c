@@ -9,42 +9,6 @@ void error_message(char *message, t_data *drawer)
 	exit(EXIT_FAILURE);
 }
 
-void create_plane(t_data *drawer)
-{
-	int x, y;
-
-	ft_memset(drawer->img.addr, 0, WINDOW_HEIGHT * drawer->img.line_length);
-
-	for (y = 0; y < WINDOW_HEIGHT; y++)
-	{
-		for (x = 0; x < WINDOW_WIDTH; x++)
-		{
-			if (((x + drawer->x_offset) % 50 == 0) || ((y + drawer->y_offset) % 50 == 0))
-			{
-				int pixel_index = (y * drawer->img.line_length) + (x * (drawer->img.bpp / 8));
-				*(unsigned int *)(drawer->img.addr + pixel_index) = 0x2F2F2F;
-			}
-		}
-	}
-
-	for (y = 0; y < WINDOW_HEIGHT; y++)
-	{
-		for (x = 0; x < WINDOW_WIDTH; x++)
-		{
-			if ((x + drawer->x_offset) == WINDOW_WIDTH / 2)
-			{
-				int pixel_index = (y * drawer->img.line_length) + (x * (drawer->img.bpp / 8));
-				*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFFFFFF;
-			}
-			if ((y + drawer->y_offset) == WINDOW_HEIGHT / 2)
-			{
-				int pixel_index = (y * drawer->img.line_length) + (x * (drawer->img.bpp / 8));
-				*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFFFFFF;
-			}
-		}
-	}
-}
-
 void create_window(t_data *drawer)
 {
 	drawer->mlx = mlx_init();
@@ -70,95 +34,6 @@ void create_window(t_data *drawer)
 										 &drawer->img.endian);
 	if (!drawer->img.addr)
 		error_message("mlx_get_data_addr failed.", drawer);
-}
-
-double evaluate_expression(const char *expression, double x)
-{
-	double result;
-	char **tokens;
-	int i;
-
-	i = 0;
-	result = 0.0;
-	tokens = ft_split(expression, ' ');
-	while (tokens[i])
-	{
-		if (ft_strchr(tokens[i], 'x'))
-		{
-			double coefficient = 1.0;
-			int power = 1;
-			char *x_pos = ft_strchr(tokens[i], 'x');
-			char *power_pos = ft_strchr(tokens[i], '^');
-
-			if ((tokens[i][0] == '-' || tokens[i][0] == '+') && tokens[i][1] == 'x')
-			{
-				if (tokens[i][0] == '-')
-					coefficient = -1.0;
-			}
-			else if (x_pos != tokens[i])
-				coefficient = atof(tokens[i]);
-
-			if (power_pos)
-				power = atoi(power_pos + 1);
-
-			result += coefficient * pow(x, power);
-		}
-		else
-			result += atof(tokens[i]);
-		i++;
-	}
-
-	for (int j = 0; tokens[j]; j++)
-		free(tokens[j]);
-	free(tokens);
-	return (result);
-}
-
-void draw_function(char *function, t_data *drawer)
-{
-	int x, y;
-	double result;
-	int prev_y = 0;
-
-	create_plane(drawer);
-	for (x = -WINDOW_WIDTH / 2; x < WINDOW_WIDTH / 2; x++)
-	{
-		result = evaluate_expression(function, (x + drawer->x_offset) / drawer->zoom);
-		y = (int)(WINDOW_HEIGHT / 2 - (result * drawer->zoom) - drawer->y_offset);
-
-		if (x != -WINDOW_WIDTH / 2)
-		{
-			int dx = x + WINDOW_WIDTH / 2;
-			int prev_dx = (x - 1) + WINDOW_WIDTH / 2;
-
-			int clipped_prev_y = prev_y;
-			int clipped_y = y;
-
-			if (prev_y < 0)
-				clipped_prev_y = 0;
-			else if (prev_y >= WINDOW_HEIGHT)
-				clipped_prev_y = WINDOW_HEIGHT - 1;
-
-			if (y < 0)
-				clipped_y = 0;
-			else if (y >= WINDOW_HEIGHT)
-				clipped_y = WINDOW_HEIGHT - 1;
-
-			if ((prev_y >= 0 && prev_y < WINDOW_HEIGHT) || (y >= 0 && y < WINDOW_HEIGHT))
-			{
-				int step_y = (clipped_y > clipped_prev_y) ? 1 : -1;
-				for (int curr_y = clipped_prev_y; curr_y != clipped_y + step_y; curr_y += step_y)
-				{
-					if (curr_y >= 0 && curr_y < WINDOW_HEIGHT)
-					{
-						int pixel_index = (curr_y * drawer->img.line_length) + (prev_dx * (drawer->img.bpp / 8));
-						*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFF0000;
-					}
-				}
-			}
-		}
-		prev_y = y;
-	}
 }
 
 int main(int ac, char **av)

@@ -19,7 +19,10 @@ LIBFT_DIR	=	$(LIB_DIR)/libft
 SRC			=	main.c \
 				free_all.c \
 				init.c \
-				hooks.c
+				hooks.c \
+				draw_utils.c \
+				plane.c \
+				function_drawing.c
 SRCS		=	$(addprefix $(SRCS_DIR)/, $(SRC))
 OBJS		=	$(addprefix $(OBJS_DIR)/, $(SRC:.c=.o))
 

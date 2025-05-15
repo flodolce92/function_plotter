@@ -1,6 +1,6 @@
 #include "func_drawer.h"
 
-int	on_destroy(t_data *drawer)
+int on_destroy(t_data *drawer)
 {
 	if (drawer->mlx)
 	{

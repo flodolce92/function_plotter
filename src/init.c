@@ -1,12 +1,12 @@
 #include "func_drawer.h"
 
-void	init_struct(t_data *drawer)
+void init_struct(t_data *drawer)
 {
 	drawer->mlx = NULL;
 	drawer->win = NULL;
-	drawer->x_offset = 0;
-	drawer->y_offset = 0;
-	drawer->zoom = 1.0;
+	drawer->center_math_x = 0.0;
+	drawer->center_math_y = 0.0;
+	drawer->zoom = 50.0;
 	drawer->function = NULL;
 	drawer->img.img = NULL;
 	drawer->img.addr = NULL;

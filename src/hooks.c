@@ -39,17 +39,23 @@ int handle_key_released(int keycode, t_data *drawer)
 int loop_hook(t_data *drawer)
 {
 	if (drawer->keys.w)
-		drawer->y_offset -= 10;
+		drawer->center_math_y += PAN_SPEED / drawer->zoom;
 	if (drawer->keys.s)
-		drawer->y_offset += 10;
+		drawer->center_math_y -= PAN_SPEED / drawer->zoom;
 	if (drawer->keys.a)
-		drawer->x_offset -= 10;
+		drawer->center_math_x -= PAN_SPEED / drawer->zoom;
 	if (drawer->keys.d)
-		drawer->x_offset += 10;
+		drawer->center_math_x += PAN_SPEED / drawer->zoom;
+
 	if (drawer->keys.up)
-		drawer->zoom *= 1.01;
+		drawer->zoom *= ZOOM_FACTOR;
 	if (drawer->keys.down)
-		drawer->zoom /= 1.01;
+		drawer->zoom /= ZOOM_FACTOR;
+
+	if (drawer->zoom < MIN_ZOOM)
+		drawer->zoom = MIN_ZOOM;
+	if (drawer->zoom > MAX_ZOOM)
+		drawer->zoom = MAX_ZOOM;
 
 	draw_function(drawer->function, drawer);
 	mlx_put_image_to_window(drawer->mlx, drawer->win, drawer->img.img, 0, 0);
