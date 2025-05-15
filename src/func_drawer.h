@@ -10,7 +10,7 @@
 # include <string.h>
 # include <math.h>
 
-# define WINDOW_WIDTH 800
+# define WINDOW_WIDTH 600
 # define WINDOW_HEIGHT 600
 
 enum e_keys
@@ -19,7 +19,9 @@ enum e_keys
 	A = 97,
 	S = 115,
 	D = 100,
-	ESC = 65307
+	ESC = 65307,
+	ARROW_UP = 65362,
+	ARROW_DOWN = 65364,
 };
 
 typedef struct s_key_press
@@ -28,6 +30,8 @@ typedef struct s_key_press
 	bool	d;
 	bool	s;
 	bool	w;
+	bool	up;
+	bool	down;
 }	t_key_press;
 
 typedef struct s_image
@@ -45,6 +49,7 @@ typedef struct s_data
 	void		*win;
 	int			x_offset;
 	int			y_offset;
+	double		zoom;
 	char		*function;
 	t_image		img;
 	t_key_press	keys;

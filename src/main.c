@@ -22,7 +22,7 @@ void create_plane(t_data *drawer)
 			if (((x + drawer->x_offset) % 50 == 0) || ((y + drawer->y_offset) % 50 == 0))
 			{
 				int pixel_index = (y * drawer->img.line_length) + (x * (drawer->img.bpp / 8));
-				*(unsigned int *)(drawer->img.addr + pixel_index) = 0x2F2F2F; // Grid color
+				*(unsigned int *)(drawer->img.addr + pixel_index) = 0x2F2F2F;
 			}
 		}
 	}
@@ -34,12 +34,12 @@ void create_plane(t_data *drawer)
 			if ((x + drawer->x_offset) == WINDOW_WIDTH / 2)
 			{
 				int pixel_index = (y * drawer->img.line_length) + (x * (drawer->img.bpp / 8));
-				*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFFFFFF; // Axis color
+				*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFFFFFF;
 			}
 			if ((y + drawer->y_offset) == WINDOW_HEIGHT / 2)
 			{
 				int pixel_index = (y * drawer->img.line_length) + (x * (drawer->img.bpp / 8));
-				*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFFFFFF; // Axis color
+				*(unsigned int *)(drawer->img.addr + pixel_index) = 0xFFFFFF;
 			}
 		}
 	}
@@ -123,8 +123,8 @@ void draw_function(char *function, t_data *drawer)
 	create_plane(drawer);
 	for (x = -WINDOW_WIDTH / 2; x < WINDOW_WIDTH / 2; x++)
 	{
-		result = evaluate_expression(function, x + drawer->x_offset);
-		y = (int)(WINDOW_HEIGHT / 2 - result) - drawer->y_offset;
+		result = evaluate_expression(function, (x + drawer->x_offset) / drawer->zoom);
+		y = (int)(WINDOW_HEIGHT / 2 - (result * drawer->zoom) - drawer->y_offset);
 
 		if (x != -WINDOW_WIDTH / 2)
 		{

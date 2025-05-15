@@ -6,6 +6,7 @@ void	init_struct(t_data *drawer)
 	drawer->win = NULL;
 	drawer->x_offset = 0;
 	drawer->y_offset = 0;
+	drawer->zoom = 1.0;
 	drawer->function = NULL;
 	drawer->img.img = NULL;
 	drawer->img.addr = NULL;
@@ -16,4 +17,6 @@ void	init_struct(t_data *drawer)
 	drawer->keys.a = false;
 	drawer->keys.s = false;
 	drawer->keys.d = false;
+	drawer->keys.up = false;
+	drawer->keys.down = false;
 }
