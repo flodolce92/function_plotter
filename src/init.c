@@ -7,7 +7,7 @@ void init_struct(t_data *drawer)
 	drawer->center_math_x = 0.0;
 	drawer->center_math_y = 0.0;
 	drawer->zoom = 50.0;
-	drawer->function = NULL;
+	drawer->functions = NULL;
 	drawer->img.img = NULL;
 	drawer->img.addr = NULL;
 	drawer->img.bpp = 0;

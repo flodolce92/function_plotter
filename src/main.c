@@ -40,13 +40,13 @@ int main(int ac, char **av)
 {
 	t_data drawer;
 
-	if (ac != 2)
+	if (ac < 2)
 		error_message("Wrong number of arguments. \
 			\nUsage: ./draw <function>",
 					  NULL);
 
 	init_struct(&drawer);
-	drawer.function = av[1];
+	drawer.functions = av + 1;
 	create_window(&drawer);
 	mlx_loop_hook(drawer.mlx, loop_hook, &drawer);
 	mlx_hook(drawer.win, 2, 1L << 0, handle_key_press, &drawer);

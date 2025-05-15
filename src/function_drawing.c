@@ -42,36 +42,46 @@ double evaluate_expression(const char *expression, double x)
 	return (result);
 }
 
-void draw_function(char *function, t_data *drawer)
+void draw_function(char **functions, t_data *drawer)
 {
 	double mx_math;
 	double my_math_result;
 	int sx_pixel, sy_pixel;
-	int prev_sx_pixel = -1, prev_sy_pixel = -1;
+	int prev_sx_pixel, prev_sy_pixel;
+	int i;
+	int colors[] = {0xFF0000, 0x00FF00, 0x0000FF, 0xFF00FF, 0xFFFF00, 0x00FFFF}; // Array of colors
 
 	create_plane(drawer); // Redraws background, grid, and axes
 
-	for (sx_pixel = 0; sx_pixel < WINDOW_WIDTH; sx_pixel++)
+	i = 0;
+	while (functions[i])
 	{
-		mx_math = drawer->center_math_x + (sx_pixel - WINDOW_WIDTH / 2.0) / drawer->zoom;
-		my_math_result = evaluate_expression(function, mx_math);
+		prev_sx_pixel = -1;
+		prev_sy_pixel = -1;
 
-		// Check for NaN or Inf to prevent issues with drawing
-		if (isnan(my_math_result) || isinf(my_math_result))
+		for (sx_pixel = 0; sx_pixel < WINDOW_WIDTH; sx_pixel++)
 		{
-			prev_sx_pixel = -1; // Discontinuity
-			prev_sy_pixel = -1;
-			continue;
-		}
+			mx_math = drawer->center_math_x + (sx_pixel - WINDOW_WIDTH / 2.0) / drawer->zoom;
+			my_math_result = evaluate_expression(functions[i], mx_math);
 
-		sy_pixel = (int)(WINDOW_HEIGHT / 2.0 - (my_math_result - drawer->center_math_y) * drawer->zoom);
+			// Check for NaN or Inf to prevent issues with drawing
+			if (isnan(my_math_result) || isinf(my_math_result))
+			{
+				prev_sx_pixel = -1; // Discontinuity
+				prev_sy_pixel = -1;
+				continue;
+			}
 
-		if (prev_sx_pixel != -1)
-		{
-			// Draw line from (prev_sx_pixel, prev_sy_pixel) to (sx_pixel, sy_pixel)
-			draw_line_bresenham(drawer, prev_sx_pixel, prev_sy_pixel, sx_pixel, sy_pixel, 0xFF0000); // Red color for function
+			sy_pixel = (int)(WINDOW_HEIGHT / 2.0 - (my_math_result - drawer->center_math_y) * drawer->zoom);
+
+			if (prev_sx_pixel != -1)
+			{
+				// Draw line from (prev_sx_pixel, prev_sy_pixel) to (sx_pixel, sy_pixel)
+				draw_line_bresenham(drawer, prev_sx_pixel, prev_sy_pixel, sx_pixel, sy_pixel, colors[i % 6]); // Cycle through colors
+			}
+			prev_sx_pixel = sx_pixel;
+			prev_sy_pixel = sy_pixel;
 		}
-		prev_sx_pixel = sx_pixel;
-		prev_sy_pixel = sy_pixel;
+		i++;
 	}
 }

@@ -57,7 +57,7 @@ int loop_hook(t_data *drawer)
 	if (drawer->zoom > MAX_ZOOM)
 		drawer->zoom = MAX_ZOOM;
 
-	draw_function(drawer->function, drawer);
+	draw_function(drawer->functions, drawer);
 	mlx_put_image_to_window(drawer->mlx, drawer->win, drawer->img.img, 0, 0);
 	return (0);
 }

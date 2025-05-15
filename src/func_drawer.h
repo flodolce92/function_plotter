@@ -58,7 +58,7 @@ typedef struct s_data
 	double center_math_x;
 	double center_math_y;
 	double zoom;
-	char *function;
+	char **functions;
 	t_image img;
 	t_key_press keys;
 } t_data;
@@ -74,7 +74,7 @@ int handle_key_released(int keycode, t_data *drawer);
 int loop_hook(t_data *drawer);
 
 /* Drawing functions */
-void draw_function(char *function, t_data *drawer);
+void draw_function(char **functions, t_data *drawer);
 void my_mlx_pixel_put(t_image *img, int x, int y, int color);
 void draw_line_bresenham(t_data *drawer, int x1, int y1, int x2, int y2, int color);
 void create_plane(t_data *drawer);
