@@ -49,9 +49,9 @@ void draw_function(char **functions, t_data *drawer)
 	int sx_pixel, sy_pixel;
 	int prev_sx_pixel, prev_sy_pixel;
 	int i;
-	int colors[] = {0xFF0000, 0x00FF00, 0x0000FF, 0xFF00FF, 0xFFFF00, 0x00FFFF}; // Array of colors
+	int colors[] = {0xFF0000, 0x00FF00, 0x0000FF, 0xFF00FF, 0xFFFF00, 0x00FFFF};
 
-	create_plane(drawer); // Redraws background, grid, and axes
+	create_plane(drawer);
 
 	i = 0;
 	while (functions[i])
@@ -65,9 +65,10 @@ void draw_function(char **functions, t_data *drawer)
 			my_math_result = evaluate_expression(functions[i], mx_math);
 
 			// Check for NaN or Inf to prevent issues with drawing
-			if (isnan(my_math_result) || isinf(my_math_result))
+			if (isnan(my_math_result) || isinf(my_math_result) || my_math_result > 1e4 || my_math_result < -1e4)
 			{
-				prev_sx_pixel = -1; // Discontinuity
+				// Discontinue drawing if the result is out of bounds
+				prev_sx_pixel = -1;
 				prev_sy_pixel = -1;
 				continue;
 			}
